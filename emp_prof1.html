@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Registration System</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+
+    background-image:
+    linear-gradient(
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0.55)
+    ),
+    url("office.jpg");
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:700px;
+    padding:35px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(15px);
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,0.25);
+
+    box-shadow:0 10px 35px rgba(0,0,0,.3);
+}
+
+h1{
+    text-align:center;
+    color:white;
+    margin-bottom:25px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin:10px 0;
+
+    border:none;
+    border-radius:10px;
+
+    background:rgba(255,255,255,.9);
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#2563eb;
+    color:white;
+
+    font-size:18px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+.error{
+    color:#ffcccc;
+    margin-top:15px;
+    line-height:1.8;
+    font-weight:bold;
+}
+
+.success{
+    display:none;
+    text-align:center;
+    color:white;
+}
+
+.success h1{
+    font-size:3rem;
+    margin-bottom:20px;
+}
+
+.success p{
+    margin:8px 0;
+    font-size:18px;
+}
+
+.success button{
+    width:250px;
+    margin-top:20px;
+}
+
+.footer{
+    text-align:center;
+    color:white;
+    margin-top:15px;
+    opacity:.8;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Registration Form -->
+
+<div class="container" id="formPage">
+
+<h1>Employee Registration System</h1>
+
+<input type="text" id="firstName" placeholder="First Name">
+
+<input type="text" id="lastName" placeholder="Last Name">
+
+<input type="text" id="address" placeholder="Address">
+
+<input type="text" id="age" placeholder="Age">
+
+<input type="text" id="experience"
+placeholder="Years of Experience">
+
+<input type="text" id="empCode"
+placeholder="Employee Code (DEV-2026-AS-043)">
+
+<button onclick="validateEmployee()">
+Register Employee
+</button>
+
+<div id="error" class="error"></div>
+
+<div class="footer">
+Developed by Ananya Saxena
+</div>
+
+</div>
+
+
+<!-- Thank You Page -->
+
+<div class="container success" id="thankYouPage">
+
+<h1>🎉 Thank You!</h1>
+
+<p>Employee registration completed successfully.</p>
+
+<br>
+
+<div id="summary"></div>
+
+<button onclick="location.reload()">
+Register Another Employee
+</button>
+
+</div>
+
+<script>
+
+function celebrate(){
+
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+
+    const interval = setInterval(function(){
+
+        if(Date.now() > animationEnd){
+            clearInterval(interval);
+            return;
+        }
+
+        confetti({
+            particleCount:10,
+            spread:70,
+            origin:{ y:0.6 }
+        });
+
+    },150);
+}
+
+function validateEmployee(){
+
+    let firstName =
+    document.getElementById("firstName").value.trim();
+
+    let lastName =
+    document.getElementById("lastName").value.trim();
+
+    let address =
+    document.getElementById("address").value.trim();
+
+    let age =
+    document.getElementById("age").value.trim();
+
+    let experience =
+    document.getElementById("experience").value.trim();
+
+    let empCode =
+    document.getElementById("empCode").value.trim();
+
+    let errors = [];
+
+    document.getElementById("error").innerHTML = "";
+
+    let nameRegex = /^[A-Za-z]+$/;
+
+    if(!nameRegex.test(firstName)){
+        errors.push("First name must contain letters only.");
+    }
+
+    if(!nameRegex.test(lastName)){
+        errors.push("Last name must contain letters only.");
+    }
+
+    if(!/^\d+$/.test(age)){
+        errors.push("Age must be numeric.");
+    }
+
+    if(!/^\d+$/.test(experience)){
+        errors.push("Years of experience must be numeric.");
+    }
+
+    let departmentName = "";
+    let year = "";
+    let rollNo = "";
+
+    let parts = empCode.split("-");
+
+    if(parts.length !== 4){
+
+        errors.push(
+        "Employee code format must be DEV-2026-AS-043"
+        );
+
+    }
+    else{
+
+        let department =
+        parts[0].toUpperCase();
+
+        year =
+        parts[1];
+
+        let initials =
+        parts[2];
+
+        rollNo =
+        parts[3];
+
+        let validDepartments =
+        ["DEV","WEB","CRE","MAG"];
+
+        if(!validDepartments.includes(department)){
+            errors.push("Invalid department code.");
+        }
+
+        if(!/^\d{4}$/.test(year)){
+            errors.push("Year must contain 4 digits.");
+        }
+
+        if(!/^[A-Za-z]{2}$/.test(initials)){
+            errors.push("Initials must contain exactly 2 letters.");
+        }
+
+        if(!/^\d+$/.test(rollNo)){
+            errors.push("Roll number must be numeric.");
+        }
+
+        if(department==="DEV"){
+            departmentName="Development";
+        }
+        else if(department==="WEB"){
+            departmentName="Website Designer";
+        }
+        else if(department==="CRE"){
+            departmentName="Creator";
+        }
+        else if(department==="MAG"){
+            departmentName="Management";
+        }
+    }
+
+    if(errors.length > 0){
+
+        document.getElementById("error")
+        .innerHTML = errors.join("<br>");
+
+        return;
+    }
+
+    document.getElementById("formPage")
+    .style.display = "none";
+
+    document.getElementById("thankYouPage")
+    .style.display = "block";
+
+    celebrate();
+
+    document.getElementById("summary")
+    .innerHTML =
+
+    `<p><b>Name:</b> ${firstName} ${lastName}</p>
+
+    <p><b>Age:</b> ${age}</p>
+
+    <p><b>Address:</b> ${address}</p>
+
+    <p><b>Experience:</b> ${experience} years</p>
+
+    <p><b>Department:</b> ${departmentName}</p>
+
+    <p><b>Year:</b> ${year}</p>
+
+    <p><b>Roll Number:</b> ${rollNo}</p>
+
+    <p><b>Employee Code:</b> ${empCode}</p>`;
+}
+
+</script>
+
+</body>
+</html>
+
